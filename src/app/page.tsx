@@ -7,11 +7,21 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const Page = () => {
   // await requireAuth();
   const trpc = useTRPC();
   const queryClient = useQueryClient();
+
+  const testAi = useMutation(trpc.testAi.mutationOptions({
+    onSuccess: () => {
+      toast.success("AI Test Successful");
+    },
+    onError: () => {
+      toast.error("AI Test Failed");
+    }
+  }));
 
   const { data } = useQuery(trpc.getWorkflows.queryOptions());
 
@@ -27,6 +37,7 @@ const Page = () => {
       <pre>{JSON.stringify(data, null, 2)}</pre>
       <LogoutButton />
       <Button disabled={create.isPending} onClick={() => create.mutate()}>Create Workflow</Button>
+      <Button disabled={testAi.isPending} onClick={() => testAi.mutate()}>Test AI</Button>
     </div>
   );
 };
